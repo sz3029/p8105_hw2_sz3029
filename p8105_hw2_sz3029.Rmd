@@ -4,17 +4,71 @@ author: Shihui Zhu sz3029
 output: html_document
 ---
 
-# Section 1
-
-Here's a **code chunk** that samples from 
-a _normal distribution_:
-
-```{r}
-samp = rnorm(100)
-length(samp)
+```{r package, message=FALSE}
+# This chunk loads all the packages used in this homework
+library(readxl)
+library(tidyverse)
 ```
 
-# Section 2
+# Problem 1
 
-I can take the mean of the sample, too!
-The mean is `r mean(samp)`.
+## Read in Mr. Trash Wheel dataset and clean the data
+```{r}
+mr_trash_wheel_df <- 
+  read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+  sheet = 1,
+  range = "A2:N408") %>%
+  janitor::clean_names() %>%
+  drop_na() %>%
+  mutate(sports_balls = round(sports_balls, digits = 0))
+```
+
+## Read in precipitation data for 2018
+```{r}
+preci_18_df <- 
+  read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+  sheet = 5,
+  range = "A2:B14") %>%
+  janitor::clean_names() %>%
+  mutate(year = "2018")
+```
+
+## Read in precipitation data for 2019
+```{r}
+preci_19_df <- 
+  read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+  sheet = 4,
+  range = "A2:B14") %>%
+  janitor::clean_names() %>%
+  mutate(year = "2019")
+```
+
+## Combine precipitation data for 2018 and 2019, and convert month to character variable
+```{r}
+preci_18_and_19_df <- 
+  bind_rows(preci_18_df, preci_19_df) %>%
+  mutate(month = month.name[month])
+```
+
+## Description for Mr. Trash Wheel dataset
+
+The Mr. Trash Wheel dataset contains `r length(names(mr_trash_wheel_df))` variables:
+`r names(mr_trash_wheel_df)`. It contains `r nrow(mr_trash_wheel_df)` rows 
+and `r ncol(mr_trash_wheel_df)` columns of observations. The data were 
+collected from years `r unique(dplyr::pull(mr_trash_wheel_df, year))`. A table 
+displaying the values of the key variables is shown below: 
+
+`r mr_trash_wheel_df %>% dplyr::group_by(year) %>% summarize(total_weight_tons = sum(weight_tons), mean_weight_tons = mean(weight_tons), total_volume_cubic_yards = sum(volume_cubic_yards), mean_volume_cubic_yards = mean(volume_cubic_yards)) %>% knitr::kable()`
+
+The total weight of trash in tons was `r sum(dplyr::pull(mr_trash_wheel_df, weight_tons))`, 
+with mean of `r mean(dplyr::pull(mr_trash_wheel_df, weight_tons))` per month.
+and the total volume was `r sum(dplyr::pull(mr_trash_wheel_df, volume_cubic_yards))` cubic yards,
+with mean of `r mean(dplyr::pull(mr_trash_wheel_df, volume_cubic_yards))` per month. 
+
+## Description for precipitation data for 2018 and 2019
+
+
+
+
+
+# Problem 2
