@@ -62,7 +62,7 @@ of trash collected over the 6 years was `r sum(dplyr::pull(mr_trash_wheel_df, we
 tons, with a total volume of `r sum(dplyr::pull(mr_trash_wheel_df, volume_cubic_yards))` 
 cubic yards. A table displaying the values of the key variables for each year is shown below: 
 
-`r mr_trash_wheel_df %>% dplyr::group_by(year) %>% select(year, weight_tons:homes_powered) %>% skimr::skim() %>% knitr::kable()`
+`r mr_trash_wheel_df %>% dplyr::group_by(year) %>% select(year, weight_tons:homes_powered) %>% skimr::skim() %>% select(-skim_type, -complete_rate, -numeric.p0, -numeric.p25, -numeric.p75, -numeric.p100) %>% knitr::kable(col.names = c("Variable", "Year", "Missing", "Mean", "SD", "Median", "Histogram"))`
 
 The dataset includes information about different kinds of trash collected. For example, the total number of sports balls collected in 2019 was `r mr_trash_wheel_df %>% dplyr::filter(year == "2019") %>% dplyr::pull(sports_balls) %>% sum()`, 
 and the median number is `r mr_trash_wheel_df %>% dplyr::filter(year == "2019") %>% dplyr::pull(sports_balls) %>% median()`. 
