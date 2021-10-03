@@ -204,7 +204,7 @@ male_nh <-
   baby_name %>%
   dplyr::filter(gender == "MALE",
                 year_of_birth == '2016',
-                ethnicity != "HISPANIC") %>%
+                ethnicity == "WHITE NON HISPANIC") %>%
   select(rank, childs_first_name, count)
 
 # Create the plot
