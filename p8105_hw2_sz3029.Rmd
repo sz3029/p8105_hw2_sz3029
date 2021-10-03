@@ -13,7 +13,7 @@ library(tidyverse)
 # Problem 1
 
 ## Read in Mr. Trash Wheel dataset and clean the data
-```{r}
+```{r trash_wheel}
 mr_trash_wheel_df <- 
   read_excel("data/p1/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   sheet = 1,
@@ -24,7 +24,7 @@ mr_trash_wheel_df <-
 ```
 
 ## Read in precipitation data for 2018
-```{r}
+```{r preci18}
 preci_18_df <- 
   read_excel("data/p1/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   sheet = 5,
@@ -34,7 +34,7 @@ preci_18_df <-
 ```
 
 ## Read in precipitation data for 2019
-```{r}
+```{r perci19}
 preci_19_df <- 
   read_excel("data/p1/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   sheet = 4,
@@ -44,7 +44,7 @@ preci_19_df <-
 ```
 
 ## Combine precipitation data for 2018 and 2019, and convert month to character variable
-```{r}
+```{r combine1819}
 preci_18_and_19_df <- 
   bind_rows(preci_18_df, preci_19_df) %>%
   mutate(month = month.name[month]) # convert month to character variable
@@ -62,7 +62,7 @@ of trash collected over the 6 years was `r sum(dplyr::pull(mr_trash_wheel_df, we
 tons, with a total volume of `r sum(dplyr::pull(mr_trash_wheel_df, volume_cubic_yards))` 
 cubic yards. A table displaying the values of the key variables for each year is shown below: 
 
-`r mr_trash_wheel_df %>% dplyr::group_by(year) %>% select(year, weight_tons:homes_powered) %>% skimr::skim() %>% select(-skim_type, -complete_rate, -numeric.p0, -numeric.p25, -numeric.p75, -numeric.p100) %>% knitr::kable(col.names = c("Variable", "Year", "Missing", "Mean", "SD", "Median", "Histogram"))`
+`r mr_trash_wheel_df %>% dplyr::group_by(year) %>% select(year, weight_tons:homes_powered) %>% skimr::skim() %>% select(-skim_type, -complete_rate, -numeric.p0, -numeric.p25, -numeric.p75, -numeric.p100) %>% knitr::kable(digits = 3, col.names = c("Variable", "Year", "Missing", "Mean", "SD", "Median", "Histogram"))`
 
 The dataset includes information about different kinds of trash collected. For example, the total number of sports balls collected in 2019 was `r mr_trash_wheel_df %>% dplyr::filter(year == "2019") %>% dplyr::pull(sports_balls) %>% sum()`, 
 and the median number is `r mr_trash_wheel_df %>% dplyr::filter(year == "2019") %>% dplyr::pull(sports_balls) %>% median()`. 
@@ -126,7 +126,7 @@ unemployment <- read_csv("data/p2/unemployment.csv") %>%
 
 * merge `snp` into `pols` via `left_join()`
 * merge with `unemployment` data
-```{r}
+```{r merge}
 pols_snp <-
   left_join(pols, snp, by = c("year", "month"))
 pols_snp_unemployment <-
@@ -167,7 +167,7 @@ baby_name <- read_csv("data/p3/Popular_Baby_Names.csv") %>%
 
 ## Create a table of rank in popularity of the name “Olivia” as a female baby name over time
 
-```{r}
+```{r olivia}
 olivia <-
   baby_name %>%
   dplyr::filter(childs_first_name == "OLIVIA") %>%
@@ -181,7 +181,7 @@ olivia
 ```
 ## Create a table of the most popular name among male children over time
 
-```{r}
+```{r male}
 male <-
   baby_name %>%
   dplyr::filter(gender == "MALE",
@@ -195,7 +195,28 @@ male <-
 male
 ```
 
+## Scatter Plot
 
+* For male, white non-hispanic children born in 2016, produce a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis)
+```{r plot}
+# Select the names
+male_nh <-
+  baby_name %>%
+  dplyr::filter(gender == "MALE",
+                year_of_birth == '2016',
+                ethnicity != "HISPANIC") %>%
+  select(rank, childs_first_name, count)
+
+# Create the plot
+ggplot(male_nh, aes(x = rank, y = count)) +
+  geom_point() +
+  xlab("Rank") +
+  ylab("Number") +
+  ggtitle("Scatter plot of number v.s. rank for male, white non-hispanic children born in 2016")
+
+## Save the plot
+ggsave("hw2_p2_scatter_plot.jpg")
+```
 
 
 
