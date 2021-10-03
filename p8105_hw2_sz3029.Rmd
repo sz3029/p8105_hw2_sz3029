@@ -53,24 +53,49 @@ preci_18_and_19_df <-
 ## Description for Mr. Trash Wheel dataset
 
 The Mr. Trash Wheel dataset contains `r length(names(mr_trash_wheel_df))` variables:
-`r names(mr_trash_wheel_df)`. It contains `r nrow(mr_trash_wheel_df)` rows 
+`r names(mr_trash_wheel_df)`. Columns from `plastic_bottles` to `homes_powered` indicate
+different kinds of trash collected at Mr. Trash Wheel. 
+The dataset contains `r nrow(mr_trash_wheel_df)` rows 
 and `r ncol(mr_trash_wheel_df)` columns of observations. The data were 
 collected from years `r unique(dplyr::pull(mr_trash_wheel_df, year))`. The total weight 
 of trash collected over the 6 years was `r sum(dplyr::pull(mr_trash_wheel_df, weight_tons))` 
 tons, with a total volume of `r sum(dplyr::pull(mr_trash_wheel_df, volume_cubic_yards))` 
-cubic yards. A table displaying the values of the key variables is shown below: 
+cubic yards. A table displaying the values of the key variables for each year is shown below: 
 
 `r mr_trash_wheel_df %>% dplyr::group_by(year) %>% select(year, weight_tons:homes_powered) %>% skimr::skim() %>% knitr::kable()`
 
-There were different kinds of trash collected. For example, the total number of sports balls collected in 2019
-was `r mr_trash_wheel_df %>% dplyr::filter(str_detect(year, "2019")) %>% dplyr::pull(sports_balls) %>% sum()`, and the median number is `r mr_trash_wheel_df %>% dplyr::filter(str_detect(year, "2019")) %>% dplyr::pull(sports_balls) %>% median()`. 
-
-The precipitation dataset contains total precipitation per month from 2018 to 2019. It has `r length(names(preci_18_and_19_df))` variables: `r names(preci_18_and_19_df)`, with a dimension of `r nrow(preci_18_and_19_df)` rows and `r ncol(preci_18_and_19_df)` columns. The total precipitation in year 2018 was `r preci_18_and_19_df %>% dplyr::filter(str_detect(year, "2018")) %>% dplyr::pull(total) %>% sum()`. 
+The dataset includes information about different kinds of trash collected. For example, the total number of sports balls collected in 2019 was `r mr_trash_wheel_df %>% dplyr::filter(str_detect(year, "2019")) %>% dplyr::pull(sports_balls) %>% sum()`, 
+and the median number is `r mr_trash_wheel_df %>% dplyr::filter(str_detect(year, "2019")) %>% dplyr::pull(sports_balls) %>% median()`. 
 
 ## Description for precipitation data for 2018 and 2019
 
-
-
+The precipitation dataset contains data of total precipitation per month from 2018 to 2019. It has `r length(names(preci_18_and_19_df))` variables: `r names(preci_18_and_19_df)`, with a dimension of `r nrow(preci_18_and_19_df)` rows and `r ncol(preci_18_and_19_df)` columns. The total precipitation in year 2018 was `r preci_18_and_19_df %>% dplyr::filter(str_detect(year, "2018")) %>% dplyr::pull(total) %>% sum()`. 
 
 
 # Problem 2
+## Clean data in pols-month.csv
+* break up the variable `mon` into integer variables `year`, `month`, and `day`
+* replace month number with month name
+* create a `president` variable taking values `gop` and `dem`, and remove `prez_dem` and `prez_gop`
+* remove the `day` variable
+```{r pols, message=FALSE}
+pols_month_df <- read_csv("fivethirtyeight_datasets/pols-month.csv") %>%
+  janitor::clean_names() %>%
+  separate(mon, into = c("year", "month", "day"), convert = TRUE) %>%
+  mutate(month = month.name[month],
+         president = recode(prez_dem, `1` = "dem", `0` = "gop")) %>%
+  select(-day, -prez_dem, -prez_gop)
+
+```
+
+
+
+```{r unemploy, message=FALSE}
+unemploy_df <- read_csv("fivethirtyeight_datasets/unemployment.csv")
+```
+
+
+
+
+
+
