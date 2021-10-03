@@ -96,18 +96,41 @@ Use similar process as above:
 ```{r snp, message=FALSE}
 snp_df <- read_csv("fivethirtyeight_datasets/snp.csv") %>%
   janitor::clean_names() %>%
-  mutate(date = as.Date(as.character(date),"%m/%d/%y")) %>%
+  mutate(date = as.Date(as.character(date),"%m/%d/%y"),
+         date = as.Date(ifelse(date > Sys.Date(),
+                        format(date, "19%y-%m-%d"),
+                        format(date)))) %>% 
   separate(date, into = c("year", "month", "day"), convert = TRUE) %>%
   select(year, month, everything()) %>%
   mutate(month = month.name[month]) %>%
   select(-day)
 ```
 
+## Tidy unemployment data
+
+* switching from “wide” to “long” format
+* match the variable names
 
 ```{r unemploy, message=FALSE}
 unemploy_df <- read_csv("fivethirtyeight_datasets/unemployment.csv") %>%
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month",
+    values_to = "unemployment_percent"
+  ) %>%
+  mutate(month = match(month, month.abb),
+         month = month.name[month]) %>%
   janitor::clean_names()
-  
+```
+## Merge the dataset
+
+* merge `snp` into `pols` via `left_join()`
+* merge with `unemployment` data
+```{r}
+pols_snp_df <-
+  left_join(pols_month_df, snp_df, by = c("year", "month"))
+final <-
+  left_join(pols_snp_df, unemploy_df, by = c("year", "month"))
 ```
 
 
