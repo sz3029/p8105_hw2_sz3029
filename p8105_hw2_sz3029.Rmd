@@ -85,13 +85,29 @@ pols_month_df <- read_csv("fivethirtyeight_datasets/pols-month.csv") %>%
   mutate(month = month.name[month],
          president = recode(prez_dem, `1` = "dem", `0` = "gop")) %>%
   select(-day, -prez_dem, -prez_gop)
+```
 
+## Clean data in snp.csv
+Use similar process as above:
+
+* break up the variable `date` into integer variables `year`, `month`, and `day`
+* replace month number with month name
+* remove `day` variable
+```{r snp, message=FALSE}
+snp_df <- read_csv("fivethirtyeight_datasets/snp.csv") %>%
+  janitor::clean_names() %>%
+  mutate(date = as.Date(as.character(date),"%m/%d/%y")) %>%
+  separate(date, into = c("year", "month", "day"), convert = TRUE) %>%
+  select(year, month, everything()) %>%
+  mutate(month = month.name[month]) %>%
+  select(-day)
 ```
 
 
-
 ```{r unemploy, message=FALSE}
-unemploy_df <- read_csv("fivethirtyeight_datasets/unemployment.csv")
+unemploy_df <- read_csv("fivethirtyeight_datasets/unemployment.csv") %>%
+  janitor::clean_names()
+  
 ```
 
 
