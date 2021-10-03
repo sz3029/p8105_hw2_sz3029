@@ -64,12 +64,12 @@ cubic yards. A table displaying the values of the key variables for each year is
 
 `r mr_trash_wheel_df %>% dplyr::group_by(year) %>% select(year, weight_tons:homes_powered) %>% skimr::skim() %>% knitr::kable()`
 
-The dataset includes information about different kinds of trash collected. For example, the total number of sports balls collected in 2019 was `r mr_trash_wheel_df %>% dplyr::filter(str_detect(year, "2019")) %>% dplyr::pull(sports_balls) %>% sum()`, 
-and the median number is `r mr_trash_wheel_df %>% dplyr::filter(str_detect(year, "2019")) %>% dplyr::pull(sports_balls) %>% median()`. 
+The dataset includes information about different kinds of trash collected. For example, the total number of sports balls collected in 2019 was `r mr_trash_wheel_df %>% dplyr::filter(year == "2019") %>% dplyr::pull(sports_balls) %>% sum()`, 
+and the median number is `r mr_trash_wheel_df %>% dplyr::filter(year == "2019") %>% dplyr::pull(sports_balls) %>% median()`. 
 
 ## Description for precipitation data for 2018 and 2019
 
-The precipitation dataset contains data of total precipitation per month from 2018 to 2019. It has `r length(names(preci_18_and_19_df))` variables: `r names(preci_18_and_19_df)`, with a dimension of `r nrow(preci_18_and_19_df)` rows and `r ncol(preci_18_and_19_df)` columns. The total precipitation in year 2018 was `r preci_18_and_19_df %>% dplyr::filter(str_detect(year, "2018")) %>% dplyr::pull(total) %>% sum()`. 
+The precipitation dataset contains data of total precipitation per month from 2018 to 2019. It has `r length(names(preci_18_and_19_df))` variables: `r names(preci_18_and_19_df)`, with a dimension of `r nrow(preci_18_and_19_df)` rows and `r ncol(preci_18_and_19_df)` columns. The total precipitation in year 2018 was `r preci_18_and_19_df %>% dplyr::filter(year == "2018") %>% dplyr::pull(total) %>% sum()`. 
 
 
 # Problem 2
@@ -150,10 +150,50 @@ range of `r max(dplyr::pull(snp, year)) - min(dplyr::pull(snp, year))` years.
 
 4. The merged dataset from the above three, `pols_snp_unemployment`, contains `r nrow(pols)` observations from `r length(names(pols))` variables. The variables are `r names(pols)`. This dataset contains information related to the number of national politicians who are democratic or republican, the Standard & Poor’s stock market index (S&P), and the percentage of unemployment at any given time, ranging from `r min(dplyr::pull(pols_snp_unemployment, year))` to `r max(dplyr::pull(pols_snp_unemployment, year))` i.e. range of `r max(dplyr::pull(pols_snp_unemployment, year)) - min(dplyr::pull(pols_snp_unemployment, year))` years.
 
+# Problem 3
+## Load and tidy the dataset for `Popular_Baby_Names.csv`
 
+* convert all characters to lower cases
+* remove duplicated rows
+```{r baby, message=FALSE}
+baby_name <- read_csv("data/p3/Popular_Baby_Names.csv") %>%
+  janitor::clean_names() %>%
+  mutate(gender = str_to_upper(gender),
+         ethnicity = str_to_upper(ethnicity),
+         childs_first_name = str_to_upper(childs_first_name)
+         ) %>%
+  distinct() # remove duplicated rows
+```
 
+## Create a table of rank in popularity of the name “Olivia” as a female baby name over time
 
+```{r}
+olivia <-
+  baby_name %>%
+  dplyr::filter(childs_first_name == "OLIVIA") %>%
+  select(-childs_first_name, -gender) %>%
+  arrange(year_of_birth) %>%
+  knitr::kable(
+    col.names = c("Year of Birth", "Ethnicity", "Count", "Rank"),
+    caption = "The Table of Rank in Popularity of the Name “Olivia” As a Female Baby Name Over Time"
+  )
+olivia
+```
+## Create a table of the most popular name among male children over time
 
+```{r}
+male <-
+  baby_name %>%
+  dplyr::filter(gender == "MALE",
+                rank == '1') %>%
+  select(-gender, -rank) %>%
+  arrange(year_of_birth) %>%
+  knitr::kable(
+    col.names = c("Year of Birth", "Ethnicity", "Children's Names", "Count"),
+    caption = "The Table of the Most Popular Name Among Male Children Over Time"
+  )
+male
+```
 
 
 
