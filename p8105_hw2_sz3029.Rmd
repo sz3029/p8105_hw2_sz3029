@@ -15,7 +15,7 @@ library(tidyverse)
 ## Read in Mr. Trash Wheel dataset and clean the data
 ```{r}
 mr_trash_wheel_df <- 
-  read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+  read_excel("data/p1/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   sheet = 1,
   range = "A2:N408") %>%
   janitor::clean_names() %>%
@@ -26,7 +26,7 @@ mr_trash_wheel_df <-
 ## Read in precipitation data for 2018
 ```{r}
 preci_18_df <- 
-  read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+  read_excel("data/p1/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   sheet = 5,
   range = "A2:B14") %>%
   janitor::clean_names() %>%
@@ -36,7 +36,7 @@ preci_18_df <-
 ## Read in precipitation data for 2019
 ```{r}
 preci_19_df <- 
-  read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+  read_excel("data/p1/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   sheet = 4,
   range = "A2:B14") %>%
   janitor::clean_names() %>%
@@ -79,7 +79,7 @@ The precipitation dataset contains data of total precipitation per month from 20
 * create a `president` variable taking values `gop` and `dem`, and remove `prez_dem` and `prez_gop`
 * remove the `day` variable
 ```{r pols, message=FALSE}
-pols_month_df <- read_csv("fivethirtyeight_datasets/pols-month.csv") %>%
+pols <- read_csv("data/p2/pols-month.csv") %>%
   janitor::clean_names() %>%
   separate(mon, into = c("year", "month", "day"), convert = TRUE) %>% # convert the format of date
   mutate(month = month.name[month], # convert month name to string
@@ -94,7 +94,7 @@ Use similar process as above:
 * replace month number with month name
 * remove `day` variable
 ```{r snp, message=FALSE}
-snp_df <- read_csv("fivethirtyeight_datasets/snp.csv") %>%
+snp <- read_csv("data/p2/snp.csv") %>%
   janitor::clean_names() %>%
   mutate(date = as.Date(as.character(date),"%m/%d/%y"),
          date = as.Date(ifelse(date > Sys.Date(),
@@ -112,7 +112,7 @@ snp_df <- read_csv("fivethirtyeight_datasets/snp.csv") %>%
 * match the variable names
 
 ```{r unemploy, message=FALSE}
-unemploy_df <- read_csv("fivethirtyeight_datasets/unemployment.csv") %>%
+unemployment <- read_csv("data/p2/unemployment.csv") %>%
   pivot_longer(
     Jan:Dec,
     names_to = "month",
@@ -127,13 +127,31 @@ unemploy_df <- read_csv("fivethirtyeight_datasets/unemployment.csv") %>%
 * merge `snp` into `pols` via `left_join()`
 * merge with `unemployment` data
 ```{r}
-pols_snp_df <-
-  left_join(pols_month_df, snp_df, by = c("year", "month"))
-pols_snp_unemployment_df <-
-  left_join(pols_snp_df, unemploy_df, by = c("year", "month"))
+pols_snp <-
+  left_join(pols, snp, by = c("year", "month"))
+pols_snp_unemployment <-
+  left_join(pols_snp, unemployment, by = c("year", "month"))
 ```
 
 ## Descriptions for datasets: `pols`, `snp`, `unemployment`, and `pols_snp_unemployment` merged from those
+
+1. The `pols` dataset contains `r nrow(pols)` observations from `r length(names(pols))` variables.
+The variables are `r names(pols)`. This dataset contains information related to 
+the number of national politicians who are democratic or republican at any given time, ranging from `r min(dplyr::pull(pols, year))` to `r max(dplyr::pull(pols, year))` i.e. range of `r max(dplyr::pull(pols, year)) - min(dplyr::pull(pols, year))` years. 
+
+2. The `snp` dataset contains `r nrow(snp)` observations from `r length(names(snp))` variables.
+The variables are `r names(snp)`. This dataset contains information related to 
+Standard & Poor’s stock market index (S&P), often used as a representative measure 
+of stock market as a whole, ranging from `r min(dplyr::pull(snp, year))` 
+to `r max(dplyr::pull(snp, year))` i.e. 
+range of `r max(dplyr::pull(snp, year)) - min(dplyr::pull(snp, year))` years.
+
+3. The `unemployment` dataset contains `r nrow(unemployment)` observations from `r length(names(unemployment))` variables. The variables are `r names(unemployment)`. This dataset contains information about percentage of unemployment at any given time, ranging from `r min(dplyr::pull(unemployment, year))` to `r max(dplyr::pull(unemployment, year))` i.e. range of `r max(dplyr::pull(unemployment, year)) - min(dplyr::pull(unemployment, year))` years. 
+
+4. The merged dataset from the above three, `pols_snp_unemployment`, contains `r nrow(pols)` observations from `r length(names(pols))` variables. The variables are `r names(pols)`. This dataset contains information related to the number of national politicians who are democratic or republican, the Standard & Poor’s stock market index (S&P), and the percentage of unemployment at any given time, ranging from `r min(dplyr::pull(pols_snp_unemployment, year))` to `r max(dplyr::pull(pols_snp_unemployment, year))` i.e. range of `r max(dplyr::pull(pols_snp_unemployment, year)) - min(dplyr::pull(pols_snp_unemployment, year))` years.
+
+
+
 
 
 
