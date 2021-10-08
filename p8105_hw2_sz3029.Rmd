@@ -15,9 +15,9 @@ library(tidyverse)
 ## Read in Mr. Trash Wheel dataset and clean the data
 ```{r trash_wheel}
 mr_trash_wheel_df <- 
-  read_excel("data/p1/Trash-Wheel-Collection-Totals-7-2021-sept.xlsx",
+  read_excel("data/p1/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",
   sheet = 1,
-  range = "A2:N573") %>%
+  range = "A2:N534") %>%
   janitor::clean_names() %>%
   drop_na() %>%
   mutate(sports_balls = round(sports_balls, digits = 0)) # Round the number of sports balls to nearest integer
@@ -26,8 +26,8 @@ mr_trash_wheel_df <-
 ## Read in precipitation data for 2018
 ```{r preci18}
 preci_18_df <- 
-  read_excel("data/p1/Trash-Wheel-Collection-Totals-7-2021-sept.xlsx",
-  sheet = 8,
+  read_excel("data/p1/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",
+  sheet = 7,
   range = "A2:B14") %>%
   janitor::clean_names() %>%
   mutate(year = "2018") # Add year variable
@@ -36,8 +36,8 @@ preci_18_df <-
 ## Read in precipitation data for 2019
 ```{r perci19}
 preci_19_df <- 
-  read_excel("data/p1/Trash-Wheel-Collection-Totals-7-2021-sept.xlsx",
-  sheet = 7,
+  read_excel("data/p1/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",
+  sheet = 6,
   range = "A2:B14") %>%
   janitor::clean_names() %>%
   mutate(year = "2019") # Add year variable
@@ -57,14 +57,13 @@ preci_18_and_19_df
 The Mr. Trash Wheel dataset contains `r nrow(mr_trash_wheel_df)` observations 
 of `r ncol(mr_trash_wheel_df)` variables. The variables are:
 `r names(mr_trash_wheel_df)`. Columns from `plastic_bottles` to `homes_powered` indicate
-different kinds of trash collected at Mr. Trash Wheel. The data were collected from years `r unique(dplyr::pull(mr_trash_wheel_df, year))`. The total weight of trash collected over the 6 years was `r sum(dplyr::pull(mr_trash_wheel_df, weight_tons))` tons, with a total volume of `r sum(dplyr::pull(mr_trash_wheel_df, volume_cubic_yards))` cubic yards.
+different kinds of trash collected at Mr. Trash Wheel. The data were collected from years `r unique(dplyr::pull(mr_trash_wheel_df, year))`.
 
-The total number of sports balls collected in 2019 was `r mr_trash_wheel_df %>% dplyr::filter(year == "2019") %>% dplyr::pull(sports_balls) %>% sum()`, 
-and the median number is `r mr_trash_wheel_df %>% dplyr::filter(year == "2019") %>% dplyr::pull(sports_balls) %>% median()`. 
+The median number of sports balls collected in 2019 was `r mr_trash_wheel_df %>% dplyr::filter(year == "2019") %>% dplyr::pull(sports_balls) %>% median()`. 
 
 ## Description for precipitation data for 2018 and 2019
 
-The precipitation dataset contains data of total precipitation per month from 2018 to 2019. It has `r length(names(preci_18_and_19_df))` variables: `r names(preci_18_and_19_df)`, and total `r nrow(preci_18_and_19_df)` observations. The total precipitation in year 2018 was `r preci_18_and_19_df %>% dplyr::filter(year == "2018") %>% dplyr::pull(total) %>% sum()`. And the total precipitation in year 2019 was `r preci_18_and_19_df %>% dplyr::filter(year == "2019") %>% dplyr::pull(total) %>% sum()`.
+The precipitation dataset contains data of total precipitation per month from 2018 to 2019. It has `r length(names(preci_18_and_19_df))` variables: `r names(preci_18_and_19_df)`, and total `r nrow(preci_18_and_19_df)` observations. The total precipitation in year 2018 was `r preci_18_and_19_df %>% dplyr::filter(year == "2018") %>% dplyr::pull(total) %>% sum()`.
 
 
 # Problem 2
@@ -171,6 +170,7 @@ baby_name <- read_csv("data/p3/Popular_Baby_Names.csv") %>%
 
 baby_name
 ```
+
 
 ## Create a table of rank in popularity of the name “Olivia” as a female baby name over time
 
